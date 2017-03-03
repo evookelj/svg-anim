@@ -1,8 +1,10 @@
-var bClear = document.getElementById("clear");
+var bStop = document.getElementById("stop");
 var bCirc = document.getElementById("circle");
 var bDvd = document.getElementById("dvd");
 var svg = document.getElementById("vimage");
 var rid;
+var height = vimage.getAttribute("height");
+var width = vimage.getAttribute("width");
 
 var stop = function() {
 	window.cancelAnimationFrame(rid);
@@ -19,8 +21,8 @@ var circ = function() {
 	window.cancelAnimationFrame(rid);
 	var dx = 1;
 	var c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-	var height = vimage.getAttribute("height")
-	c.setAttribute("cx", vimage.getAttribute("width")/2);
+
+	c.setAttribute("cx", width/2);
 	c.setAttribute("cy", height/2);
 	c.setAttribute("r", "1");
 	c.setAttribute("fill", "aliceblue");
@@ -37,21 +39,37 @@ var circ = function() {
 }
 
 var dvd = function() {
-	var x = Math.random()*c.width; 
-    var y = Math.random()*c.height;
+    clear();
+    var offset=50;
     var xvol = 1;
     var yvol = 1;
     window.cancelAnimationFrame(rid);
 
-    var d = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    var d = document.createElementNS("http://www.w3.org/2000/svg", "image");
+    d.setAttribute("href", "pic.png");
+    d.setAttribute("x", Math.random()*(width-offset));
+    d.setAttribute("y", Math.random()*(height-offset));
+    d.setAttribute("width", offset);
+    d.setAttribute("height", offset);
+    svg.appendChild(d);
 
     var drawDvd = function() {
-    	console.log(rid);
-
-
+    	//console.log(rid);
+	var curx = parseInt(d.getAttribute("x"));
+	var cury = parseInt(d.getAttribute("y"));
+	if ((curx>=width-offset) || (curx==0)) {
+	    xvol *= -1;
+	}
+	if ((cury>=height-offset) || (cury==0)) {
+	    yvol *= -1;
+	}
+	d.setAttribute("x", curx+xvol);
+	d.setAttribute("y", cury+yvol);
+	rid = window.requestAnimationFrame( drawDvd );
     }
+    drawDvd();
 }
 
-bClear.addEventListener('click', stop);
+bStop.addEventListener('click', stop);
 bCirc.addEventListener('click', circ);
 bDvd.addEventListener('click', dvd);
